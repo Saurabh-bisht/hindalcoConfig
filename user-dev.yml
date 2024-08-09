@@ -1,10 +1,9 @@
 spring:
-  cloud:
-    data:
-      mongodb:
-        host: localhost
-        port: 27018
-        database: hindalco
+  data:
+    mongodb:
+      host: localhost
+      port: 27018
+      database: hindalco
 
 eureka:
   client:
