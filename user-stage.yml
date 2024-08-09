@@ -1,18 +1,18 @@
 spring:
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: hindalco
+      host: ${MONGODB_HOST:localhost}
+      port: ${MONGODB_PORT:27017}
+      database: ${MONGODB_DATABASE:hindalco}
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka}
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
   
 jwt:
-  secret: abcd123abcd123
-  expiration: 3600000
+  secret: ${JWT_SECRET:abcd123abcd123}
+  expiration: ${JWT_EXPIRATION:3600000}
