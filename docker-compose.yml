@@ -34,7 +34,7 @@ services:
     image: "hcorptech/apigateway:0.0.1"
     container_name: apigateway-ms
     ports:
-      - "9090:9090"
+      - "80:9090"
     deploy:
       resources:
         limits:
