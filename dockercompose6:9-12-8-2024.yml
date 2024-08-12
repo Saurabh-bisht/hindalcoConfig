@@ -9,7 +9,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1200m
+          memory: 700m
     networks:
       - hindalco
 
@@ -123,7 +123,7 @@ services:
       - SERVER_PORT=8083
       - JWT_SECRET=abcd123abcd123
       - JWT_EXPIRATION=3600000
-
+      
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -138,55 +138,10 @@ services:
     volumes:
       - mongodb_data:/data/db
 
-  loki:
-    image: grafana/loki:2.8.0
-    container_name: loki
-    ports:
-      - "3100:3100"
-    networks:
-      - hindalco
-    volumes:
-      - loki_data:/loki
-    command: -config.file=/etc/loki/local-config.yaml
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    networks:
-      - hindalco
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./provisioning:/etc/grafana/provisioning  # Mount the provisioning directory
-    depends_on:
-      - loki
-
-  alloy:
-    image: grafana/alloy:v1.0.0
-    volumes:
-      - ./alloy-config.yml:/etc/alloy/config.alloy:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
-    ports:
-      - 12345:12345
-    depends_on:
-      - grafana
-    networks:
-      - hindalco
-
 networks:
   hindalco:
     driver: "bridge"
 
 volumes:
   mongodb_data:
-    driver: local
-  loki_data:
-    driver: local
-  grafana_data:
-    driver: local
-  alloy_data:
     driver: local
