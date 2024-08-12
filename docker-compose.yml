@@ -44,8 +44,8 @@ services:
     depends_on:
       - discovery
     environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_PORT=27017
+      - MONGODB_HOST=159.89.171.87
+      - MONGODB_PORT=25755
       - MONGODB_DATABASE=hindalco
       - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=9090
@@ -68,8 +68,8 @@ services:
       - configserver
       - apigateway
     environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_PORT=27017
+      - MONGODB_HOST=159.89.171.87
+      - MONGODB_PORT=25755
       - MONGODB_DATABASE=hindalco
       - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=8081
@@ -92,8 +92,8 @@ services:
       - configserver
       - apigateway
     environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_PORT=27017
+      - MONGODB_HOST=159.89.171.87
+      - MONGODB_PORT=25755
       - MONGODB_DATABASE=hindalco
       - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=8082
@@ -116,27 +116,13 @@ services:
       - configserver
       - apigateway
     environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_PORT=27017
+      - MONGODB_HOST=159.89.171.87
+      - MONGODB_PORT=25755
       - MONGODB_DATABASE=hindalco
       - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=8083
       - JWT_SECRET=abcd123abcd123
       - JWT_EXPIRATION=3600000
-      
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    networks:
-      - hindalco
-    deploy:
-      resources:
-        limits:
-          memory: 500m
-    volumes:
-      - mongodb_data:/data/db
 
 networks:
   hindalco:
