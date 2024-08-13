@@ -1,4 +1,4 @@
-version: '3.0'
+version: '3'
 
 services:
   discovery:
@@ -176,6 +176,18 @@ services:
       - grafana
     networks:
       - hindalco
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9009:9090"
+    networks:
+      - hindalco
+    volumes:
+      - ./monitering/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
 
 networks:
   hindalco:
