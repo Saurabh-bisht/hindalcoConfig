@@ -1,30 +1,5 @@
-version: '3'
-
-x-common-config: &common-config
-  networks:
-    - hindalco
-  deploy:
-    resources:
-      limits:
-        memory: 700m
-
-x-microservice-config: &microservice-config
-  <<: *common-config
-  depends_on:
-    - discovery
-    - configserver
-    - apigateway
-  environment:
-    - MONGODB_HOST=159.89.171.87
-    - MONGODB_PORT=25755
-    - MONGODB_DATABASE=hindalco
-    - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
-    - JWT_SECRET=abcd123abcd123
-    - JWT_EXPIRATION=3600000
-
 services:
   discovery:
-    <<: *common-config
     image: "hcorptech/discoveryserver:0.0.1"
     container_name: discovery-ms
     ports:
@@ -33,13 +8,21 @@ services:
       resources:
         limits:
           memory: 1200m
+    networks:
+      - hindalco
+
 
   configserver:
-    <<: *common-config
     image: "hcorptech/configserver:0.0.1"
     container_name: configserver-ms
     ports:
       - "8888:8888"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - hindalco
     depends_on:
       discovery:
         condition: service_started
@@ -47,11 +30,16 @@ services:
       - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
 
   apigateway:
-    <<: *common-config
     image: "hcorptech/apigateway:0.0.1"
     container_name: apigateway-ms
     ports:
       - "80:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - hindalco
     depends_on:
       - discovery
     environment:
@@ -66,40 +54,85 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT="http://tempo:4317"
       - OTEL_METRICS_EXPORTER=none
       - OTEL_SERVICE_NAME="APIGATEWAY-trance"
-
   userservice:
-    <<: *microservice-config
     image: "hcorptech/userservice:0.0.1"
     container_name: userservice-ms
     ports:
       - "8081:8081"
+    deploy:
+      resources:
+        limits:
+          memory: 700m 
+    networks:
+      - hindalco
+    depends_on:
+      - discovery
+      - configserver
+      - apigateway
     environment:
+      - MONGODB_HOST=159.89.171.87
+      - MONGODB_PORT=25755
+      - MONGODB_DATABASE=hindalco
+      - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=8081
+      - JWT_SECRET=abcd123abcd123
+      - JWT_EXPIRATION=3600000
 
   plantmicroservice:
-    <<: *microservice-config
     image: "hcorptech/plantmicroservice:0.0.1"
     container_name: plantservice-ms
     ports:
       - "8082:8082"
+    deploy:
+      resources:
+        limits:
+          memory: 700m 
+    networks:
+      - hindalco
+    depends_on:
+      - discovery
+      - configserver
+      - apigateway
     environment:
+      - MONGODB_HOST=159.89.171.87
+      - MONGODB_PORT=25755
+      - MONGODB_DATABASE=hindalco
+      - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=8082
+      - JWT_SECRET=abcd123abcd123
+      - JWT_EXPIRATION=3600000
 
   helperservice:
-    <<: *microservice-config
     image: "hcorptech/helperservice:0.0.1"
     container_name: helperservice-ms
     ports:
       - "8083:8083"
+    deploy:
+      resources:
+        limits:
+          memory: 700m 
+    networks:
+      - hindalco
+    depends_on:
+      - discovery
+      - configserver
+      - apigateway
     environment:
+      - MONGODB_HOST=159.89.171.87
+      - MONGODB_PORT=25755
+      - MONGODB_DATABASE=hindalco
+      - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=8083
+      - JWT_SECRET=abcd123abcd123
+      - JWT_EXPIRATION=3600000
 
   mongodb:
-    <<: *common-config
     image: mongo:latest
     container_name: mongodb
     ports:
       - "27017:27017"
+    networks:
+      - hindalco
     deploy:
       resources:
         limits:
@@ -108,31 +141,32 @@ services:
       - mongodb_data:/data/db
 
   loki:
-    <<: *common-config
     image: grafana/loki:2.8.0
     container_name: loki
     ports:
       - "3100:3100"
+    networks:
+      - hindalco
     volumes:
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
 
   grafana:
-    <<: *common-config
     image: grafana/grafana:latest
     container_name: grafana
     ports:
       - "3000:3000"
+    networks:
+      - hindalco
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./provisioning:/etc/grafana/provisioning
+      - ./provisioning:/etc/grafana/provisioning  # Mount the provisioning directory
     depends_on:
       - loki
 
   alloy:
-    <<: *common-config
     image: grafana/alloy:v1.0.0
     volumes:
       - ./alloy-config.yml:/etc/alloy/config.alloy:ro
@@ -142,20 +176,21 @@ services:
       - 12345:12345
     depends_on:
       - grafana
+    networks:
+      - hindalco
 
   prometheus:
-    <<: *common-config
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
       - "9009:9090"
+    networks:
+      - hindalco
     volumes:
       - ./monitering/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-
   tempo:
-    <<: *common-config
     image: grafana/tempo:2.4.2
     container_name: tempo
     command: -config.file /etc/tempo-config.yml
@@ -164,6 +199,8 @@ services:
       - "4317:4317"
     volumes:
       - ./monitering/tempo/tempo.yml:/etc/tempo-config.yml
+    networks:
+      - hindalco
 
 networks:
   hindalco:
@@ -178,3 +215,4 @@ volumes:
     driver: local
   alloy_data:
     driver: local
+ 
