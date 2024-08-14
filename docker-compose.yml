@@ -94,6 +94,15 @@ services:
     environment:
       - SERVER_PORT=8083
 
+  readerservice:
+    <<: *microservice-config
+    image: "hcorptech/readerservice:0.0.1"
+    container_name: readerservice-ms
+    ports:
+      - "8084:8084"
+    environment:
+      - SERVER_PORT=8084
+
   mongodb:
     <<: *common-config
     image: mongo:latest
