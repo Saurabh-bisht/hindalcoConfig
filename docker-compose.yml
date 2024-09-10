@@ -15,9 +15,9 @@ x-microservice-config: &microservice-config
     - configserver
     - apigateway
   environment:
-    - MONGODB_HOST=159.89.171.87
+    - MONGODB_HOST=165.22.215.8
     - MONGODB_PORT=25755
-    - MONGODB_DATABASE=hindalco
+    - MONGODB_DATABASE=hindalcotest
     - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
     - JWT_SECRET=abcd123abcd123
     - JWT_EXPIRATION=3600000
@@ -55,9 +55,9 @@ services:
     depends_on:
       - discovery
     environment:
-      - MONGODB_HOST=159.89.171.87
+      - MONGODB_HOST=165.22.215.8
       - MONGODB_PORT=25755
-      - MONGODB_DATABASE=hindalco
+      - MONGODB_DATABASE=hindalcotest
       - EUREKA_DEFAULT_ZONE=http://discovery-ms:8761/eureka
       - SERVER_PORT=9090
       - JWT_SECRET=abcd123abcd123
